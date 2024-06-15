@@ -1,6 +1,47 @@
 import 'package:application/screens/privacy.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'login_page.dart';
+
+
+FirebaseAuth auth = FirebaseAuth.instance;
+
+FirebaseFirestore fireStore = FirebaseFirestore.instance;
+
+void createUserAccount(
+    {required String email,
+      required String password,
+      required String name,
+      required String phone}) async {
+
+  await auth
+      .createUserWithEmailAndPassword(email: email, password: password)
+      .then((value) {
+    saveUserData(
+        name: name, email: email, phone: phone, uid: value.user!.uid);
+
+  }).catchError((onError) {
+  });
+}
+
+void saveUserData({
+  required String name,
+  required String email,
+  String? phone = '',
+  String? address = '',
+  required String uid,
+
+}) {
+  UserModel userModel = UserModel(
+      address: address,
+      name: name,
+      email: email,
+      phone: phone,
+      uid: uid);
+
+  fireStore.collection('users').doc(uid).set(userModel.toMap());
+}
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -25,6 +66,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState?.save();
+
+
       // Perform email and password validation logic here
       if (_email != null &&
           _password != null &&
