@@ -1,4 +1,5 @@
 //import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:application/screens/sign_in_page.dart';
 import 'package:flutter/material.dart';
 class profilePage extends StatelessWidget {
   const profilePage({Key? key}) : super(key: key);
@@ -7,17 +8,17 @@ class profilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
 
-      body: Container(
+      body: userModel?.email != null ? Container(
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration( image: DecorationImage(
             image: AssetImage('assets/IMAGE 2024-03-06 22:36:21.jpg'),
             fit: BoxFit.cover ),),
         child: Column(
-         // mainAxisAlignment: MainAxisAlignment.center,
+          // mainAxisAlignment: MainAxisAlignment.center,
           children: [
-          const SizedBox(
-          height: 40),
+            const SizedBox(
+                height: 40),
 
             Container(
               decoration: BoxDecoration(
@@ -39,17 +40,17 @@ class profilePage extends StatelessWidget {
             const SizedBox(
               height: 20,
             ),
-            const Text(
-              "Mohamed tolba",
+            Text(
+              userModel!.name ,
               style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold ,
-                  color: Colors.white),
+                  color: Colors.black),
             ),
             const SizedBox(
               height: 0,
             ),
             const Text("Account user"  ,
               style: TextStyle(fontSize: 15,
-              color: Colors.white),
+                  color: Colors.black),
             ),
             const SizedBox(
               height: 20,
@@ -161,20 +162,20 @@ class profilePage extends StatelessWidget {
                     [
                       SizedBox(height: 15 ,),
 
-                  SizedBox(height: 10 ,),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Row(
-                      children:
-                      [
+                      SizedBox(height: 10 ,),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Row(
+                          children:
+                          [
 
-                        Icon(Icons.email_outlined , ),
-                        SizedBox(width: 5 ,),
-                        Text('mohamed663@gmail.com' ,
-                          style: TextStyle(fontWeight: FontWeight.bold), ),
+                            Icon(Icons.email_outlined , ),
+                            SizedBox(width: 5 ,),
+                            Text(userModel!.email ,
+                              style: TextStyle(fontWeight: FontWeight.bold), ),
 
-                      ],
-                    ),),
+                          ],
+                        ),),
                       SizedBox(height: 10,),
 
                       Padding(
@@ -186,7 +187,7 @@ class profilePage extends StatelessWidget {
                             Icon(Icons.phone , ),
                             SizedBox(width: 5 ,),
                             Text('+20-106-788-870' ,
-                       style: TextStyle(fontWeight: FontWeight.bold),),
+                              style: TextStyle(fontWeight: FontWeight.bold),),
 
                           ],
                         ),
@@ -215,7 +216,7 @@ class profilePage extends StatelessWidget {
 
                             Icon(Icons.date_range_sharp , ),
                             SizedBox(width: 5 ,),
-                            Text('1\/5\/2000'
+                            Text((userModel!.date)!
                               ,style: TextStyle(fontWeight: FontWeight.bold), ),
 
                           ],
@@ -237,7 +238,7 @@ class profilePage extends StatelessWidget {
             ),
           ],
         ),
-      ),
+      ):  Center(child: CircularProgressIndicator())
     );
 
   }

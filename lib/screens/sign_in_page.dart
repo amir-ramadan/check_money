@@ -1,6 +1,64 @@
+import 'package:application/models/user_model.dart';
+import 'package:application/screens/HomeScreen.dart';
 import 'package:application/screens/privacy.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'loading_to_home.dart';
 import 'login_page.dart';
+
+var firstNameController = TextEditingController();
+var lastNameController = TextEditingController();
+var emailController = TextEditingController();
+var passwordController = TextEditingController();
+var passwordController1 = TextEditingController();
+var dateController = TextEditingController();
+
+UserModel? userModel ;
+
+FirebaseAuth auth = FirebaseAuth.instance;
+
+FirebaseFirestore fireStore = FirebaseFirestore.instance;
+
+void createUserAccount(
+    {
+      context ,
+      required String email,
+      required String password,
+      required String date,
+      required String name}) async {
+
+  await auth
+      .createUserWithEmailAndPassword(email: email, password: password)
+      .then((value) {
+    saveUserData( date: date,
+        name: name, email: email, uid: value.user!.uid).then((value){
+      Navigator.pushAndRemoveUntil(context,
+          MaterialPageRoute(builder: (context) => LoadingHomeScreen()), (route) => false);
+          
+    });
+
+  }).catchError((onError) {
+  });
+}
+
+Future<void> saveUserData({
+
+  required String name,
+  required String email,
+  required String uid,
+  required String date,
+
+})async {
+   userModel = UserModel(
+     date: date,
+      name: name,
+      email: email,
+
+      uid: uid);
+
+  fireStore.collection('users').doc(uid).set(userModel!.toMap());
+}
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -25,6 +83,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState?.save();
+
+      String fullName = '${firstNameController.text} ${lastNameController.text}';
+
+
+      createUserAccount( context: context , date: dateController.text , email: emailController.text, password: passwordController.text, name: fullName);
+
       // Perform email and password validation logic here
       if (_email != null &&
           _password != null &&
@@ -118,6 +182,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 30,
                       ),
                       TextFormField(
+                        controller: firstNameController,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.white30,
@@ -144,6 +209,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 15.5,
                       ),
                       TextFormField(
+                        controller: lastNameController,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.white30,
@@ -170,7 +236,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 15.5,
                       ),
                       TextFormField(
-                        // controller: emaillControllar,
+                        controller: emailController,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.white30,
@@ -197,7 +263,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 15.5,
                       ),
                       TextFormField(
-                        // controller: passwordControllar,
+                        controller: passwordController,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.white30,
@@ -237,6 +303,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 15.5,
                       ),
                       TextFormField(
+                        controller: passwordController1,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.white30,
@@ -275,6 +342,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 15.5,
                       ),
                       TextFormField(
+                        controller: dateController,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.white30,

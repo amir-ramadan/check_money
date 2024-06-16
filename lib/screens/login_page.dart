@@ -2,8 +2,16 @@ import 'package:application/camera/login_register.dart';
 import 'package:application/screens/join.dart';
 import 'package:application/screens/loading_to_home.dart';
 import 'package:application/screens/sign_in_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 //import 'package:test_app/page.dart';
+
+
+final FirebaseAuth _auth = FirebaseAuth.instance;
+final TextEditingController _emailController = TextEditingController();
+final TextEditingController _passwordController = TextEditingController();
+String _errorMessage = '';
+
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -21,36 +29,49 @@ class _LoginFormState extends State<LoginForm> {
   void _LoginForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState?.save();
-      // Perform email and password validation logic here
-      if ( _email == '1' && _password== '1') {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => LoadingHomeScreen(),
-          ),
-        );
-      } else {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Invalid Credentials'),
-              content: Text('Please enter valid email and password.'),
-              actions: [
-                ElevatedButton(
 
-             style :ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(Colors.black54), ),
-                  child: Text('OK' ,),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
+      _login();
+
+    }
+  }
+
+
+
+  Future<void> _login() async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      if (userCredential.user != null) {
+        // Login successful, navigate to the home page
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoadingHomeScreen()));
       }
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Invalid Credentials'),
+                content: Text('Please enter valid email and password.'),
+                actions: [
+                  ElevatedButton(
+
+                    style :ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors.black54), ),
+                    child: Text('OK' ,),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        _errorMessage = e.message ?? 'An error occurred';
+      });
     }
   }
 
@@ -86,7 +107,7 @@ class _LoginFormState extends State<LoginForm> {
                         padding: const EdgeInsets.all( 12),
 
                         child: TextFormField(
-
+                          controller: _emailController,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: Colors.white30,
@@ -114,6 +135,7 @@ class _LoginFormState extends State<LoginForm> {
                       Padding(
                         padding: const EdgeInsets.all( 12),
                         child: TextFormField(
+                          controller: _passwordController,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: Colors.white30,
