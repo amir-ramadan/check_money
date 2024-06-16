@@ -5,6 +5,20 @@ import 'package:application/screens/sign_in_page.dart';
 import 'package:flutter/material.dart';
 //import 'package:test_app/page.dart';
 
+
+var emailController = TextEditingController();
+var passwordController = TextEditingController();
+
+Future<void> loginWithEmailAndPassword(
+    {required String email, required String password}) async {
+
+  await auth
+      .signInWithEmailAndPassword(email: email, password: password)
+      .then((value) {
+  }).catchError((onError) {
+  });
+}
+
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
 
@@ -21,6 +35,16 @@ class _LoginFormState extends State<LoginForm> {
   void _LoginForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState?.save();
+
+
+      loginWithEmailAndPassword(email: emailController.text, password: passwordController.text).then((value){
+
+        Navigator.pushAndRemoveUntil(context,
+            MaterialPageRoute(builder: (context) => LoadingHomeScreen()), (route) => false);
+
+      });
+
+
       // Perform email and password validation logic here
       if ( _email == '1' && _password== '1') {
         Navigator.push(
@@ -86,7 +110,7 @@ class _LoginFormState extends State<LoginForm> {
                         padding: const EdgeInsets.all( 12),
 
                         child: TextFormField(
-
+                          controller: emailController,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: Colors.white30,
@@ -114,6 +138,7 @@ class _LoginFormState extends State<LoginForm> {
                       Padding(
                         padding: const EdgeInsets.all( 12),
                         child: TextFormField(
+                          controller: passwordController,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: Colors.white30,
